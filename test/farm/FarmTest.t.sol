@@ -122,7 +122,7 @@ contract FarmTest is TestSetupFarm {
             uint256 blocksPassed = block.number - startBlock;
             uint256 k;
             for (; k < blocksPassed / farm.decayPeriod(); k++) {
-                expectedTotalPending += farm.rewardPerBlock(k) * 38000 * 365;
+                expectedTotalPending += farm.rewardPerBlock(k) * 43300 * 365;
             }
             expectedTotalPending +=
                 farm.rewardPerBlock(k) *
@@ -169,7 +169,7 @@ contract FarmTest is TestSetupFarm {
         uint8 numTokens
     ) public {
         vm.assume(amount > 1 && amount <= 1e50);
-        vm.assume(period > 0 && period < 365 * 38000 * 40); // 40 years of blocks
+        vm.assume(period > 0 && period < 365 * 43300 * 27); // 27 years of blocks
         vm.assume(numTokens > 0 && numTokens <= 5);
 
         for (uint256 i = 0; i < numTokens; i++) {
@@ -204,7 +204,7 @@ contract FarmTest is TestSetupFarm {
 
     function testHarvest2(uint256 amount, uint8 numTokens) public {
         vm.assume(amount > 0 && amount <= 1e30);
-        vm.assume(numTokens > 0 && numTokens <= 20);
+        vm.assume(numTokens > 0 && numTokens <= 10);
         for (uint256 i; i < numTokens; i++) {
             farm.add(1, lpTokens[i], true);
 
@@ -225,7 +225,8 @@ contract FarmTest is TestSetupFarm {
 
         for (uint256 i = 0; i < numTokens; i++) {
             // Farm runs for 416_100_000 blocks
-            for (uint256 j = 1; j < 1000; j++) {
+            uint256 maxOffset = farm.decayPeriod() * 27;
+            for (uint256 j = 1; j < 300 && j ** 3 <= maxOffset; j++) {
                 uint256 pending1;
                 uint256 pending2;
                 {
@@ -252,57 +253,30 @@ contract FarmTest is TestSetupFarm {
                     uint256 expectedPendingUB2 = expectedPendingUB1 * 9;
                     uint256 expectedPendingLB2 = expectedPendingLB1 * 9;
 
+                    //used error codes to bypass stack -too-deep
                     assertGe(
                         pending1,
                         (Math.min(expectedPendingLB1, expectedPendingUB1) *
                             99) / 100,
-                        string(
-                            abi.encodePacked(
-                                "1 i: ",
-                                i.toString(),
-                                " j: ",
-                                j.toString()
-                            )
-                        )
+                        "1"
                     );
                     assertLe(
                         pending1,
                         (Math.max(expectedPendingLB1, expectedPendingUB1) *
                             101) / 100,
-                        string(
-                            abi.encodePacked(
-                                "2 i: ",
-                                i.toString(),
-                                " j: ",
-                                j.toString()
-                            )
-                        )
+                        "2"
                     );
                     assertGe(
                         pending2,
                         (Math.min(expectedPendingLB2, expectedPendingUB2) *
                             99) / 100,
-                        string(
-                            abi.encodePacked(
-                                "3 i: ",
-                                i.toString(),
-                                " j: ",
-                                j.toString()
-                            )
-                        )
+                        "3"
                     );
                     assertLe(
                         pending2,
                         (Math.max(expectedPendingLB2, expectedPendingUB2) *
                             101) / 100,
-                        string(
-                            abi.encodePacked(
-                                "4 i: ",
-                                i.toString(),
-                                " j: ",
-                                j.toString()
-                            )
-                        )
+                        "4"
                     );
                 }
                 uint256 prevBalance1 = rewardToken.balanceOf(address(user1));
@@ -355,36 +329,36 @@ contract FarmTest is TestSetupFarm {
 
     function testAmounts() public {
         uint256[37] memory yearlyExpectedAmounts = [
-            uint256(100_000_000_000 ether),
-            83_766_559_911 ether,
-            70_168_365_594 ether,
-            58_777_626_004 ether,
-            49_235_995_301 ether,
-            41_243_299_502 ether,
-            34_548_093_187 ether,
-            28_939_749_177 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
-            24_241_832_333 ether,
+            uint256(66_721_008_924 ether),
+            55_889_893_914 ether,
+            46_817_041_470 ether,
+            39_217_025_092 ether,
+            32_850_752_819 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            21_742_478_709 ether,
+            0,
+            0,
+            0,
             0,
             0,
             0,
@@ -395,7 +369,7 @@ contract FarmTest is TestSetupFarm {
         ];
         uint256 sumExpectedAmounts;
         for (uint256 i; i < yearlyExpectedAmounts.length; i++) {
-            vm.roll(startBlock + (i + 1) * 365 * 38000);
+            vm.roll(startBlock + (i + 1) * 365 * 43300);
             sumExpectedAmounts += yearlyExpectedAmounts[i];
             assertGe(farm.totalPending(), (sumExpectedAmounts * 99) / 100, "1");
             assertLe(

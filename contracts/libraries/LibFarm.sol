@@ -21,40 +21,37 @@ library LibFarm {
     );
     event Harvest(address indexed user, uint256 amount);
 
-    // Helper getter function for a predefined set of rewards for 30 years
+    // Helper getter function for a predefined set of rewards for 27 years
     function rewardPerBlock(uint256 period) internal pure returns (uint256) {
-        // assumes 13,870,000 blocks per year to distribute a total of 1 trillion GLTR
-        uint256[30] memory _rewardPerBlock = [
-            uint256(7_209_805_335_256 gwei), // cast to force array to be uint256 (compiler issue)
-            6_039_405_905_650 gwei,
-            5_059_002_566_246 gwei,
-            4_237_752_415_572 gwei,
-            3_549_819_416_085 gwei,
-            2_973_561_607_920 gwei,
-            2_490_850_265_800 gwei,
-            2_086_499_580_203 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei,
-            1_747_788_920_901 gwei
+        // assumes 15,804,500 blocks per year (43300 blocks/day) to distribute a total of 719,830,253,819 GLTR
+        uint256[27] memory _rewardPerBlock = [
+            uint256(4_221_646_298_485 gwei), // cast to force array to be uint256 (compiler issue)
+            3_536_327_875_866 gwei,
+            2_962_260_208_800 gwei,
+            2_481_383_472_535 gwei,
+            2_078_569_573_151 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_010 gwei,
+            1_375_714_430_009 gwei,
+            1_375_714_430_009 gwei,
+            1_375_714_430_009 gwei,
+            1_375_714_430_009 gwei,
+            1_375_714_430_009 gwei,
+            1_375_714_430_009 gwei,
+            1_375_714_430_009 gwei,
+            1_375_714_430_009 gwei,
+            1_375_714_430_009 gwei,
+            1_375_714_430_009 gwei,
+            1_375_714_430_009 gwei
         ];
         // Rewards should be zero after rewards are exhausted
         if (period >= _rewardPerBlock.length) {

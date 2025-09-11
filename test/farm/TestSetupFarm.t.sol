@@ -80,7 +80,7 @@ contract TestSetupFarm is Test {
             }),
             FarmAndGLTRDeployer.FarmInitParams({
                 startBlock: startBlock,
-                decayPeriod: 38000 * 365
+                decayPeriod: 43300 * 365
             })
         );
         farm = FarmFacet(address(diamond));
