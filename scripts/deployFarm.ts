@@ -64,22 +64,16 @@ async function main() {
   const DiamondCutFacet = await hre.ethers.getContractFactory(
     "DiamondCutFacet"
   );
-  const diamondCutFacet = await DiamondCutFacet.connect(
-    owner
-  ).deploy();
+  const diamondCutFacet = await DiamondCutFacet.connect(owner).deploy();
   await diamondCutFacet.deployed();
   console.log("DiamondCutFacet: " + diamondCutFacet.address);
   const DiamondLoupeFacet = await hre.ethers.getContractFactory(
     "DiamondLoupeFacet"
   );
-  const diamondLoupeFacet = await DiamondLoupeFacet.connect(
-    owner
-  ).deploy();
+  const diamondLoupeFacet = await DiamondLoupeFacet.connect(owner).deploy();
   await diamondLoupeFacet.deployed();
   console.log("DiamondLoupeFacet: " + diamondLoupeFacet.address);
-  const OwnershipFacet = await hre.ethers.getContractFactory(
-    "OwnershipFacet"
-  );
+  const OwnershipFacet = await hre.ethers.getContractFactory("OwnershipFacet");
   let ownershipFacet = await OwnershipFacet.connect(owner).deploy();
   await ownershipFacet.deployed();
   console.log("OwnershipFacet: " + ownershipFacet.address);
@@ -94,28 +88,23 @@ async function main() {
   const ReentrancyGuardInit = await hre.ethers.getContractFactory(
     "ReentrancyGuardInit"
   );
-  const reentrancyGuardInit = await ReentrancyGuardInit.connect(
-    owner
-  ).deploy();
+  const reentrancyGuardInit = await ReentrancyGuardInit.connect(owner).deploy();
   await reentrancyGuardInit.deployed();
   console.log("ReentrancyGuardInit: " + reentrancyGuardInit.address);
 
   const GAXLiquidityTokenReward = await hre.ethers.getContractFactory(
     "GAXLiquidityTokenReward"
   );
-  const gaxLiquidityTokenReward =
-    await GAXLiquidityTokenReward.connect(owner).deploy();
+  const gaxLiquidityTokenReward = await GAXLiquidityTokenReward.connect(
+    owner
+  ).deploy();
   await gaxLiquidityTokenReward.deployed();
-  console.log(
-    "GAXLiquidityTokenReward: " + gaxLiquidityTokenReward.address
-  );
+  console.log("GAXLiquidityTokenReward: " + gaxLiquidityTokenReward.address);
 
   const FarmAndGLTRDeployer = await hre.ethers.getContractFactory(
     "FarmAndGLTRDeployer"
   );
-  const farmAndGLTRDeployer = await FarmAndGLTRDeployer.connect(
-    owner
-  ).deploy();
+  const farmAndGLTRDeployer = await FarmAndGLTRDeployer.connect(owner).deploy();
   await farmAndGLTRDeployer.deployed();
   console.log("FarmAndGLTRDeployer: " + farmAndGLTRDeployer.address);
 
@@ -139,9 +128,7 @@ async function main() {
     .connect(owner)
     .transfer(
       diamond.address,
-      await gaxLiquidityTokenReward.balanceOf(
-        await owner.getAddress()
-      )
+      await gaxLiquidityTokenReward.balanceOf(await owner.getAddress())
     );
   await tx.wait();
   console.log("GAXLiquidityTokenReward transferred to Diamond");
@@ -168,10 +155,7 @@ async function main() {
 
   await tx.wait();
 
-  farmFacet = await hre.ethers.getContractAt(
-    "FarmFacet",
-    diamond.address
-  );
+  farmFacet = await hre.ethers.getContractAt("FarmFacet", diamond.address);
   for (let i = 0; i < allocations.length; i++) {
     tx = await farmFacet
       .connect(owner)

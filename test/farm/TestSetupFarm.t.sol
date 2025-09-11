@@ -22,79 +22,79 @@ import "@contracts/test/Token.sol";
 import "./helpers/FarmUser.sol";
 
 contract TestSetupFarm is Test {
-  Diamond diamond;
-  DiamondCutFacet diamondCutFacet;
-  DiamondLoupeFacet diamondLoupeFacet;
-  OwnershipFacet ownershipFacet;
-  FarmFacet farmFacet;
+    Diamond diamond;
+    DiamondCutFacet diamondCutFacet;
+    DiamondLoupeFacet diamondLoupeFacet;
+    OwnershipFacet ownershipFacet;
+    FarmFacet farmFacet;
 
-  FarmFacet farm;
+    FarmFacet farm;
 
-  FarmInit farmInit;
-  ReentrancyGuardInit reentrancyGuardInit;
+    FarmInit farmInit;
+    ReentrancyGuardInit reentrancyGuardInit;
 
-  FarmAndGLTRDeployer farmAndGLTRDeployer;
+    FarmAndGLTRDeployer farmAndGLTRDeployer;
 
-  Token[] lpTokens;
-  GAXLiquidityTokenReward rewardToken;
+    Token[] lpTokens;
+    GAXLiquidityTokenReward rewardToken;
 
-  FarmUser user1;
-  FarmUser user2;
+    FarmUser user1;
+    FarmUser user2;
 
-  uint256 startBlock;
+    uint256 startBlock;
 
-  function setUp() public {
-    startBlock = block.number + 100;
-    deployAll();
-    populateUsers();
-  }
-
-  function deployAll() internal {
-    diamondCutFacet = new DiamondCutFacet();
-    diamondLoupeFacet = new DiamondLoupeFacet();
-    ownershipFacet = new OwnershipFacet();
-    farmFacet = new FarmFacet();
-    farmInit = new FarmInit();
-    reentrancyGuardInit = new ReentrancyGuardInit();
-    rewardToken = new GAXLiquidityTokenReward();
-    farmAndGLTRDeployer = new FarmAndGLTRDeployer();
-
-    diamond = new Diamond(
-      address(farmAndGLTRDeployer),
-      address(diamondCutFacet)
-    );
-    rewardToken.transfer(
-      address(diamond),
-      rewardToken.balanceOf(address(this))
-    );
-    farmAndGLTRDeployer.deployFarmAndGLTR(
-      FarmAndGLTRDeployer.DeployedAddresses({
-        diamond: address(diamond),
-        rewardToken: address(rewardToken),
-        diamondCutFacet: address(diamondCutFacet),
-        diamondLoupeFacet: address(diamondLoupeFacet),
-        ownershipFacet: address(ownershipFacet),
-        farmFacet: address(farmFacet),
-        farmInit: address(farmInit),
-        reentrancyGuardInit: address(reentrancyGuardInit)
-      }),
-      FarmAndGLTRDeployer.FarmInitParams({
-        startBlock: startBlock,
-        decayPeriod: 38000 * 365
-      })
-    );
-    farm = FarmFacet(address(diamond));
-    deployTokens(20);
-  }
-
-  function deployTokens(uint256 _numTokens) internal {
-    for (uint256 i = 0; i < _numTokens; i++) {
-      lpTokens.push(new Token());
+    function setUp() public {
+        startBlock = block.number + 100;
+        deployAll();
+        populateUsers();
     }
-  }
 
-  function populateUsers() internal {
-    user1 = new FarmUser();
-    user2 = new FarmUser();
-  }
+    function deployAll() internal {
+        diamondCutFacet = new DiamondCutFacet();
+        diamondLoupeFacet = new DiamondLoupeFacet();
+        ownershipFacet = new OwnershipFacet();
+        farmFacet = new FarmFacet();
+        farmInit = new FarmInit();
+        reentrancyGuardInit = new ReentrancyGuardInit();
+        rewardToken = new GAXLiquidityTokenReward();
+        farmAndGLTRDeployer = new FarmAndGLTRDeployer();
+
+        diamond = new Diamond(
+            address(farmAndGLTRDeployer),
+            address(diamondCutFacet)
+        );
+        rewardToken.transfer(
+            address(diamond),
+            rewardToken.balanceOf(address(this))
+        );
+        farmAndGLTRDeployer.deployFarmAndGLTR(
+            FarmAndGLTRDeployer.DeployedAddresses({
+                diamond: address(diamond),
+                rewardToken: address(rewardToken),
+                diamondCutFacet: address(diamondCutFacet),
+                diamondLoupeFacet: address(diamondLoupeFacet),
+                ownershipFacet: address(ownershipFacet),
+                farmFacet: address(farmFacet),
+                farmInit: address(farmInit),
+                reentrancyGuardInit: address(reentrancyGuardInit)
+            }),
+            FarmAndGLTRDeployer.FarmInitParams({
+                startBlock: startBlock,
+                decayPeriod: 38000 * 365
+            })
+        );
+        farm = FarmFacet(address(diamond));
+        deployTokens(20);
+    }
+
+    function deployTokens(uint256 _numTokens) internal {
+        for (uint256 i = 0; i < _numTokens; i++) {
+            lpTokens.push(new Token());
+        }
+    }
+
+    function populateUsers() internal {
+        user1 = new FarmUser();
+        user2 = new FarmUser();
+    }
 }
