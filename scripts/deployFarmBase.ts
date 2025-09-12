@@ -142,7 +142,7 @@ async function main() {
   };
 
   const farmInitParams = {
-    startBlock: 34_973_035, //update to a latter block on base
+    startBlock: 34_973_035, //TO-DO: update to a latter block on base
     decayPeriod: 43300 * 365, //2 second blocktime for base
   };
   tx = await farmAndGLTRDeployer.deployFarmAndGLTR(
