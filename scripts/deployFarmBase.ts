@@ -13,33 +13,35 @@ async function main() {
   let tx;
   const allocations: Allocation[] = [
     {
-      points: BigNumber.from(3),
+      points: BigNumber.from(2),
       address: "0xeae2fB93e291C2eB69195851813DE24f97f1ce71", // ghst-fud
     },
     {
-      points: BigNumber.from(3),
+      points: BigNumber.from(2),
       address: "0x62ab7d558A011237F8a57ac0F97601A764e85b88", // ghst-fomo
     },
     {
-      points: BigNumber.from(3),
+      points: BigNumber.from(2),
       address: "0x0Ba2A49aedf9A409DBB0272db7CDF98aEb1E1837", // ghst-alpha
     },
     {
-      points: BigNumber.from(3),
+      points: BigNumber.from(2),
       address: "0x699B4eb36b95cDF62c74f6322AaA140E7958Dc9f", // ghst-kek
     },
     {
-      points: BigNumber.from(3),
+      points: BigNumber.from(4),
       address: "0x56C11053159a24c0731b4b12356BC1f0578FB474", // ghst-usdc
     },
     {
-      points: BigNumber.from(1),
+      points: BigNumber.from(4),
       address: "0x0DFb9Cb66A18468850d6216fCc691aa20ad1e091", // ghst-weth
     },
     {
-      points: BigNumber.from(3),
+      points: BigNumber.from(2),
       address: "0xa83b31D701633b8EdCfba55B93dDBC202D8A4621", // ghst-gltr
     },
+
+    //total points: 20
   ];
 
   //@ts-ignore
