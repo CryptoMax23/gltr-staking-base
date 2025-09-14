@@ -61,20 +61,20 @@ export default {
     },
   },
   networks: {
-    hardhat: {
-      gas: 60000000,
-      chainId: 1,
-      blockGasLimit: 0x1fffffffffffff,
-      allowUnlimitedContractSize: true,
-      forking: {
-        url: `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-        // blockNumber: 23641001,
-        accounts:
-          process.env.PRIVATE_KEY !== undefined
-            ? [process.env.PRIVATE_KEY]
-            : [],
-      },
-    },
+    // hardhat: {
+    //   gas: 60000000,
+    //   chainId: 1,
+    //   blockGasLimit: 0x1fffffffffffff,
+    //   allowUnlimitedContractSize: true,
+    //   forking: {
+    //     url: `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
+    //     // blockNumber: 23641001,
+    //     accounts:
+    //       process.env.PRIVATE_KEY !== undefined
+    //         ? [process.env.PRIVATE_KEY]
+    //         : [],
+    //   },
+    // },
     local: {
       url: process.env.LOCAL_URL || "http://127.0.0.1:8545",
     },
@@ -96,12 +96,7 @@ export default {
     //   maxFeePerGas: 1000 * 1000 * 1000 * 50,
     //   maxPriorityFeePerGas: 1000 * 1000 * 1000,
     // },
-    matic: {
-      url: `https://polygon-mainnet.g.alchemy.com/v2/${ALCHEMY_KEY}`,
-      accounts:
-        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-      gasPrice: 1000000000000, //1000
-    },
+
     // mumbai: {
     //   url: process.env.MUMBAI_URL,
     //   accounts:

@@ -111,19 +111,15 @@ library LibFarm {
 
     // Add a new lp to the pool. Can only be called by the owner.
     // DO NOT add the same LP token more than once. Rewards will be messed up if you do.
-    function add(
-        uint256 _allocPoint,
-        IERC20 _lpToken,
-        bool _withUpdate
-    ) internal {
+    function add(uint256 _allocPoint, IERC20 _lpToken) internal {
         require(
             !s().poolTokens[address(_lpToken)],
             "add: LP token already added"
         );
         s().poolTokens[address(_lpToken)] = true;
-        if (_withUpdate) {
-            massUpdatePools();
-        }
+
+        massUpdatePools();
+
         uint256 lastRewardBlock = block.number > s().startBlock
             ? block.number
             : s().startBlock;
@@ -139,14 +135,14 @@ library LibFarm {
     }
 
     // Update the given pool's ERC20 allocation point. Can only be called by the owner.
-    function set(uint256 _pid, uint256 _allocPoint, bool _withUpdate) internal {
+    function set(uint256 _pid, uint256 _allocPoint) internal {
         require(
             s().poolTokens[address(s().poolInfo[_pid].lpToken)],
             "set: LP token not added"
         );
-        if (_withUpdate) {
-            massUpdatePools();
-        }
+
+        massUpdatePools();
+
         s().totalAllocPoint =
             s().totalAllocPoint -
             s().poolInfo[_pid].allocPoint +

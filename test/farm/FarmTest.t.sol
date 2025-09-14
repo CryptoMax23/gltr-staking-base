@@ -19,10 +19,10 @@ contract FarmTest is TestSetupFarm {
         //Only owner check
         vm.prank(address(user1));
         vm.expectRevert("LibDiamond: Must be contract owner");
-        farm.add(1, lpTokens[0], true);
+        farm.add(1, lpTokens[0]);
 
         for (uint256 i = 0; i < numTokens; i++) {
-            farm.add(i, lpTokens[i], true);
+            farm.add(i, lpTokens[i]);
             totalAllocPoint += i;
         }
         assertEq(farm.totalAllocPoint(), totalAllocPoint);
@@ -36,18 +36,18 @@ contract FarmTest is TestSetupFarm {
         }
 
         vm.expectRevert("add: LP token already added");
-        farm.add(1, lpTokens[0], true);
+        farm.add(1, lpTokens[0]);
     }
 
     function testSet() public {
-        farm.add(1, lpTokens[0], true);
+        farm.add(1, lpTokens[0]);
 
         //Only owner check
         vm.prank(address(user1));
         vm.expectRevert("LibDiamond: Must be contract owner");
-        farm.set(0, 10, true);
+        farm.set(0, 10);
 
-        farm.set(0, 10, true);
+        farm.set(0, 10);
         assertEq(address(farm.poolInfo(0).lpToken), address(lpTokens[0]));
         assertEq(farm.poolInfo(0).allocPoint, 10);
         assertEq(farm.poolInfo(0).lastRewardBlock, startBlock);
@@ -59,7 +59,7 @@ contract FarmTest is TestSetupFarm {
     function testDeposit(uint256 amount) public {
         vm.assume(amount > 0 && amount <= 1e50);
 
-        farm.add(1, lpTokens[0], true);
+        farm.add(1, lpTokens[0]);
 
         lpTokens[0].mint(address(user1), amount);
         vm.prank(address(user1));
@@ -79,7 +79,7 @@ contract FarmTest is TestSetupFarm {
     function testWithdraw(uint256 amount) public {
         vm.assume(amount > 0 && amount <= 1e50);
 
-        farm.add(1, lpTokens[0], true);
+        farm.add(1, lpTokens[0]);
 
         lpTokens[0].mint(address(user1), amount);
         vm.prank(address(user1));
@@ -106,7 +106,7 @@ contract FarmTest is TestSetupFarm {
         vm.roll(startBlock);
 
         for (uint256 i = 0; i < numTokens; i++) {
-            farm.add(1, lpTokens[i], true);
+            farm.add(1, lpTokens[i]);
             lpTokens[i].mint(address(user1), amount);
             vm.prank(address(user1));
             lpTokens[i].approve(address(farm), amount);
@@ -173,7 +173,7 @@ contract FarmTest is TestSetupFarm {
         vm.assume(numTokens > 0 && numTokens <= 5);
 
         for (uint256 i = 0; i < numTokens; i++) {
-            farm.add(1, lpTokens[i], true);
+            farm.add(1, lpTokens[i]);
             lpTokens[i].mint(address(user1), amount);
             lpTokens[i].mint(address(user2), amount);
 
@@ -206,7 +206,7 @@ contract FarmTest is TestSetupFarm {
         vm.assume(amount > 0 && amount <= 1e30);
         vm.assume(numTokens > 0 && numTokens <= 10);
         for (uint256 i; i < numTokens; i++) {
-            farm.add(1, lpTokens[i], true);
+            farm.add(1, lpTokens[i]);
 
             lpTokens[i].mint(address(user1), amount);
             vm.prank(address(user1));
@@ -310,7 +310,7 @@ contract FarmTest is TestSetupFarm {
         vm.assume(numTokens > 0 && numTokens <= 20);
 
         for (uint256 i = 0; i < numTokens; i++) {
-            farm.add(1, lpTokens[i], true);
+            farm.add(1, lpTokens[i]);
             lpTokens[i].mint(address(user1), amount);
             vm.prank(address(user1));
             lpTokens[i].approve(address(farm), amount);
