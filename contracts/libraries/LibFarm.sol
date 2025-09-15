@@ -134,6 +134,56 @@ library LibFarm {
         );
     }
 
+    // Batch add multiple LP pools. Can only be called by the owner.
+    // Prevents adding the same LP token more than once.
+    function batchAdd(
+        uint256[] memory _allocPoints,
+        IERC20[] memory _lpTokens
+    ) internal {
+        require(
+            _allocPoints.length == _lpTokens.length,
+            "batchAdd: arrays length mismatch"
+        );
+        require(_allocPoints.length > 0, "batchAdd: empty arrays");
+
+        // Check for duplicates in the batch and against existing pools
+        for (uint256 i = 0; i < _lpTokens.length; i++) {
+            require(
+                !s().poolTokens[address(_lpTokens[i])],
+                "batchAdd: LP token already added"
+            );
+
+            // Check for duplicates within the batch itself
+            for (uint256 j = i + 1; j < _lpTokens.length; j++) {
+                require(
+                    address(_lpTokens[i]) != address(_lpTokens[j]),
+                    "batchAdd: duplicate LP token in batch"
+                );
+            }
+        }
+
+        // Update pools once before adding all new pools
+        massUpdatePools();
+
+        uint256 lastRewardBlock = block.number > s().startBlock
+            ? block.number
+            : s().startBlock;
+
+        // Add all pools
+        for (uint256 i = 0; i < _lpTokens.length; i++) {
+            s().poolTokens[address(_lpTokens[i])] = true;
+            s().totalAllocPoint += _allocPoints[i];
+            s().poolInfo.push(
+                PoolInfo({
+                    lpToken: _lpTokens[i],
+                    allocPoint: _allocPoints[i],
+                    lastRewardBlock: lastRewardBlock,
+                    accERC20PerShare: 0
+                })
+            );
+        }
+    }
+
     // Update the given pool's ERC20 allocation point. Can only be called by the owner.
     function set(uint256 _pid, uint256 _allocPoint) internal {
         require(

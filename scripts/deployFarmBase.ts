@@ -28,10 +28,11 @@ async function main() {
       points: BigNumber.from(2),
       address: "0x699B4eb36b95cDF62c74f6322AaA140E7958Dc9f", // ghst-kek
     },
-    {
-      points: BigNumber.from(4),
-      address: "0x56C11053159a24c0731b4b12356BC1f0578FB474", // ghst-usdc
-    },
+    // CL pools are not compatible with ERC20-based farms
+    // {
+    //   points: BigNumber.from(4),
+    //   address: "0x8cA6075D8109bBb56d4af4B1056D2ba946c8086B", // ghst-usdc gauge (CL pool) - INCOMPATIBLE
+    // },
     {
       points: BigNumber.from(4),
       address: "0x0DFb9Cb66A18468850d6216fCc691aa20ad1e091", // ghst-weth
@@ -41,7 +42,7 @@ async function main() {
       address: "0xa83b31D701633b8EdCfba55B93dDBC202D8A4621", // ghst-gltr
     },
 
-    //total points: 20
+    //total points: 16
   ];
 
   //@ts-ignore
@@ -136,9 +137,12 @@ async function main() {
   };
 
   const farmInitParams = {
-    startBlock: 34_973_035, //TO-DO: update to a latter block on base
+    startBlock: 35_515_184, //TO-DO: update to a latter block on base
     decayPeriod: 43300 * 365, //2 second blocktime for base
   };
+
+  console.log("Deploying FarmAndGLTR...");
+
   tx = await farmAndGLTRDeployer.deployFarmAndGLTR(
     deployedAddresses,
     farmInitParams
@@ -147,18 +151,22 @@ async function main() {
   await tx.wait();
 
   farmFacet = await ethers.getContractAt("FarmFacet", diamond.address);
-  for (let i = 0; i < allocations.length; i++) {
-    tx = await farmFacet
-      .connect(owner)
-      .add(allocations[i].points, allocations[i].address);
-    await tx.wait();
-  }
+
+  // Prepare arrays for batch add
+  const allocPoints = allocations.map((allocation) => allocation.points);
+  const lpTokenAddresses = allocations.map((allocation) => allocation.address);
+
+  // Add all pools in a single transaction
+  tx = await farmFacet.connect(owner).batchAdd(allocPoints, lpTokenAddresses);
+  await tx.wait();
+  console.log(`Added ${allocations.length} farms in a single transaction`);
   ownershipFacet = await ethers.getContractAt(
     "OwnershipFacet",
     diamond.address,
     owner
   );
 
+  console.log("Transferring ownership from relayer to PC_WALLET...");
   //transfer ownership from relayer to ledger signer
   tx = await ownershipFacet.transferOwnership(PC_WALLET);
   await tx.wait();

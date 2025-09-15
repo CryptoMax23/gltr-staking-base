@@ -39,6 +39,154 @@ contract FarmTest is TestSetupFarm {
         farm.add(1, lpTokens[0]);
     }
 
+    function testBatchAdd() public {
+        uint256[] memory allocPoints = new uint256[](3);
+        IERC20[] memory tokens = new IERC20[](3);
+
+        allocPoints[0] = 1;
+        allocPoints[1] = 2;
+        allocPoints[2] = 3;
+        tokens[0] = lpTokens[0];
+        tokens[1] = lpTokens[1];
+        tokens[2] = lpTokens[2];
+
+        // Only owner check
+        vm.prank(address(user1));
+        vm.expectRevert("LibDiamond: Must be contract owner");
+        farm.batchAdd(allocPoints, tokens);
+
+        // Successful batch add
+        farm.batchAdd(allocPoints, tokens);
+
+        assertEq(farm.totalAllocPoint(), 6);
+        assertEq(farm.poolLength(), 3);
+
+        for (uint256 i = 0; i < 3; i++) {
+            PoolInfo memory poolInfo = farm.poolInfo(i);
+            assertEq(address(poolInfo.lpToken), address(tokens[i]));
+            assertEq(poolInfo.allocPoint, allocPoints[i]);
+            assertEq(poolInfo.lastRewardBlock, startBlock);
+            assertEq(poolInfo.accERC20PerShare, 0);
+            assertTrue(farm.poolTokens(address(tokens[i])));
+        }
+    }
+
+    function testBatchAddEmptyArrays() public {
+        uint256[] memory allocPoints = new uint256[](0);
+        IERC20[] memory tokens = new IERC20[](0);
+
+        vm.expectRevert("batchAdd: empty arrays");
+        farm.batchAdd(allocPoints, tokens);
+    }
+
+    function testBatchAddArrayLengthMismatch() public {
+        uint256[] memory allocPoints = new uint256[](2);
+        IERC20[] memory tokens = new IERC20[](3);
+
+        allocPoints[0] = 1;
+        allocPoints[1] = 2;
+        tokens[0] = lpTokens[0];
+        tokens[1] = lpTokens[1];
+        tokens[2] = lpTokens[2];
+
+        vm.expectRevert("batchAdd: arrays length mismatch");
+        farm.batchAdd(allocPoints, tokens);
+    }
+
+    function testBatchAddDuplicateInBatch() public {
+        uint256[] memory allocPoints = new uint256[](3);
+        IERC20[] memory tokens = new IERC20[](3);
+
+        allocPoints[0] = 1;
+        allocPoints[1] = 2;
+        allocPoints[2] = 3;
+        tokens[0] = lpTokens[0];
+        tokens[1] = lpTokens[1];
+        tokens[2] = lpTokens[0]; // Duplicate token
+
+        vm.expectRevert("batchAdd: duplicate LP token in batch");
+        farm.batchAdd(allocPoints, tokens);
+    }
+
+    function testBatchAddAlreadyExistingToken() public {
+        // First add a token individually
+        farm.add(1, lpTokens[0]);
+
+        // Try to add it again in a batch
+        uint256[] memory allocPoints = new uint256[](2);
+        IERC20[] memory tokens = new IERC20[](2);
+
+        allocPoints[0] = 2;
+        allocPoints[1] = 3;
+        tokens[0] = lpTokens[0]; // Already added
+        tokens[1] = lpTokens[1];
+
+        vm.expectRevert("batchAdd: LP token already added");
+        farm.batchAdd(allocPoints, tokens);
+    }
+
+    function testBatchAddAfterIndividualAdd() public {
+        // Add one token individually
+        farm.add(1, lpTokens[0]);
+        assertEq(farm.poolLength(), 1);
+        assertEq(farm.totalAllocPoint(), 1);
+
+        // Then batch add more tokens
+        uint256[] memory allocPoints = new uint256[](2);
+        IERC20[] memory tokens = new IERC20[](2);
+
+        allocPoints[0] = 2;
+        allocPoints[1] = 3;
+        tokens[0] = lpTokens[1];
+        tokens[1] = lpTokens[2];
+
+        farm.batchAdd(allocPoints, tokens);
+
+        assertEq(farm.poolLength(), 3);
+        assertEq(farm.totalAllocPoint(), 6); // 1 + 2 + 3
+
+        // Verify all pools are correctly set
+        PoolInfo memory pool0 = farm.poolInfo(0);
+        assertEq(address(pool0.lpToken), address(lpTokens[0]));
+        assertEq(pool0.allocPoint, 1);
+
+        PoolInfo memory pool1 = farm.poolInfo(1);
+        assertEq(address(pool1.lpToken), address(lpTokens[1]));
+        assertEq(pool1.allocPoint, 2);
+
+        PoolInfo memory pool2 = farm.poolInfo(2);
+        assertEq(address(pool2.lpToken), address(lpTokens[2]));
+        assertEq(pool2.allocPoint, 3);
+    }
+
+    function testBatchAddFuzz(uint8 numTokens) public {
+        vm.assume(numTokens > 0 && numTokens <= 20);
+
+        uint256[] memory allocPoints = new uint256[](numTokens);
+        IERC20[] memory tokens = new IERC20[](numTokens);
+        uint256 expectedTotalAlloc = 0;
+
+        for (uint256 i = 0; i < numTokens; i++) {
+            allocPoints[i] = i + 1; // Start from 1 to avoid zero allocation
+            tokens[i] = lpTokens[i];
+            expectedTotalAlloc += i + 1;
+        }
+
+        farm.batchAdd(allocPoints, tokens);
+
+        assertEq(farm.totalAllocPoint(), expectedTotalAlloc);
+        assertEq(farm.poolLength(), numTokens);
+
+        for (uint256 i = 0; i < numTokens; i++) {
+            PoolInfo memory poolInfo = farm.poolInfo(i);
+            assertEq(address(poolInfo.lpToken), address(tokens[i]));
+            assertEq(poolInfo.allocPoint, allocPoints[i]);
+            assertEq(poolInfo.lastRewardBlock, startBlock);
+            assertEq(poolInfo.accERC20PerShare, 0);
+            assertTrue(farm.poolTokens(address(tokens[i])));
+        }
+    }
+
     function testSet() public {
         farm.add(1, lpTokens[0]);
 

@@ -20,8 +20,6 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
   }
 });
 
-const ALCHEMY_KEY = process.env.ALCHEMY_KEY;
-
 // You need to export an object to set up your config
 // Go to https://hardhat.org/config/ to learn more
 
@@ -61,6 +59,11 @@ export default {
     },
   },
   networks: {
+    hardhat: {
+      forking: {
+        url: process.env.BASE_URL,
+      },
+    },
     // hardhat: {
     //   gas: 60000000,
     //   chainId: 1,
@@ -77,6 +80,10 @@ export default {
     // },
     local: {
       url: process.env.LOCAL_URL || "http://127.0.0.1:8545",
+    },
+    base: {
+      url: process.env.BASE_URL,
+      chainId: 8453,
     },
     // mainnet: {
     //   url: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`,

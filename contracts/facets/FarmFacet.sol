@@ -6,10 +6,17 @@ import "../abstract/ReentrancyGuard.sol";
 import "../abstract/Ownable.sol";
 
 contract FarmFacet is Ownable, ReentrancyGuard {
-    // Add a new lp to the pool. Can only be called by the owner.
-    // DO NOT add the same LP token more than once. Rewards will be messed up if you do.
     function add(uint256 _allocPoint, IERC20 _lpToken) external onlyOwner {
         LibFarm.add(_allocPoint, _lpToken);
+    }
+
+    // Batch add multiple LP pools. Can only be called by the owner.
+
+    function batchAdd(
+        uint256[] memory _allocPoints,
+        IERC20[] memory _lpTokens
+    ) external onlyOwner {
+        LibFarm.batchAdd(_allocPoints, _lpTokens);
     }
 
     // Update the given pool's ERC20 allocation point. Can only be called by the owner.
